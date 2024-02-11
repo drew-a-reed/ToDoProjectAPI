@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ProjectAPI.Context;
 using ProjectAPI.Helpers;
 using ProjectAPI.Models;
@@ -36,7 +39,13 @@ namespace ProjectAPI.Controllers
 				return NotFound(new { Message = "Invalid username or password" });
 			}
 
-			return Ok(new { Message = "Login Success!" });
+			user.Token = CreateJwt(user);
+
+			return Ok(new
+			{
+				Token = user.Token,
+				Message = "Login Success!"
+			});
 		}
 
 		[HttpPost("register")]
@@ -97,6 +106,35 @@ namespace ProjectAPI.Controllers
 			}
 
 			return sb.ToString();
+		}
+
+		private string CreateJwt(User userObj)
+		{
+			var jwtHandler = new JwtSecurityTokenHandler();
+			var key = Encoding.ASCII.GetBytes("310095D274CC9C1949800A380C43359E19F0E7325819586B3F624E09C6D3FA803A641676478277AD7183FAB48691691A28900FFB05592DFF337ACFA2262328BF");
+			var identity = new ClaimsIdentity(new Claim[]
+			{
+				new Claim(ClaimTypes.Role, userObj.Role),
+				new Claim(ClaimTypes.Name, $"{userObj.FirstName} {userObj.LastName}")
+			});
+			var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
+
+			var tokenDescriptor = new SecurityTokenDescriptor
+			{
+				Subject = identity,
+				Expires = DateTime.Now.AddDays(1),
+				SigningCredentials = credentials
+			};
+
+			var token = jwtHandler.CreateToken(tokenDescriptor);
+
+			return jwtHandler.WriteToken(token);
+		}
+
+		[HttpGet]
+		public async Task<ActionResult<User>> GetAllUsers()
+		{
+			return Ok(await _authContext.Users.ToListAsync());
 		}
 
 	}
