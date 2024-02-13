@@ -29,7 +29,7 @@ builder.Services.AddAuthentication(x =>
 	x.TokenValidationParameters = new TokenValidationParameters
 	{
 		ValidateIssuerSigningKey = true,
-		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("310095D274CC9C1949800A380C43359E19F0E7325819586B3F624E09C6D3FA803A641676478277AD7183FAB48691691A28900FFB05592DFF337ACFA2262328BF")),
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Fmxg2JrpJAfcOmpiMSIipCGkaoYOptOmwO5EueHU1z8Y8ewQw4lyuhChI65nyxRubUC6ameUiDUdl2SUAFeq3ia25z4F95eBc0RSlYEDAX8OAzjuCNyc5pjtKHjHZDWr")),
 		ValidateAudience = false,
 		ValidateIssuer = false
 	};
@@ -46,7 +46,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

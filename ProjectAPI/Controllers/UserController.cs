@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -111,7 +112,7 @@ namespace ProjectAPI.Controllers
 		private string CreateJwt(User userObj)
 		{
 			var jwtHandler = new JwtSecurityTokenHandler();
-			var key = Encoding.ASCII.GetBytes("310095D274CC9C1949800A380C43359E19F0E7325819586B3F624E09C6D3FA803A641676478277AD7183FAB48691691A28900FFB05592DFF337ACFA2262328BF");
+			var key = Encoding.ASCII.GetBytes("Fmxg2JrpJAfcOmpiMSIipCGkaoYOptOmwO5EueHU1z8Y8ewQw4lyuhChI65nyxRubUC6ameUiDUdl2SUAFeq3ia25z4F95eBc0RSlYEDAX8OAzjuCNyc5pjtKHjHZDWr");
 			var identity = new ClaimsIdentity(new Claim[]
 			{
 				new Claim(ClaimTypes.Role, userObj.Role),
@@ -131,6 +132,8 @@ namespace ProjectAPI.Controllers
 			return jwtHandler.WriteToken(token);
 		}
 
+
+		[Authorize]
 		[HttpGet]
 		public async Task<ActionResult<User>> GetAllUsers()
 		{
