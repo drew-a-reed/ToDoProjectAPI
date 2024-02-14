@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectAPI.Context;
 using ProjectAPI.Helpers;
 using ProjectAPI.Models;
+using ProjectAPI.Models.Dto;
 
 namespace ProjectAPI.Controllers
 {
@@ -41,11 +43,16 @@ namespace ProjectAPI.Controllers
 			}
 
 			user.Token = CreateJwt(user);
+			var newAccessToken = user.Token;
+			var newRefreshToken = CreateRefreshToken();
+			user.RefreshToken = newRefreshToken;
+			user.RefreshTokenExpireTime = DateTime.Now.AddDays(5);
+			await _authContext.SaveChangesAsync();
 
-			return Ok(new
+			return Ok(new TokenApiDto()
 			{
-				Token = user.Token,
-				Message = "Login Success!"
+				AccessToken = newAccessToken,
+				RefreshToken = newRefreshToken
 			});
 		}
 
@@ -116,14 +123,14 @@ namespace ProjectAPI.Controllers
 			var identity = new ClaimsIdentity(new Claim[]
 			{
 				new Claim(ClaimTypes.Role, userObj.Role),
-				new Claim(ClaimTypes.Name, $"{userObj.FirstName} {userObj.LastName}")
+				new Claim(ClaimTypes.Name, $"{userObj.Username}")
 			});
 			var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
 
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Subject = identity,
-				Expires = DateTime.Now.AddDays(1),
+				Expires = DateTime.UtcNow.AddMinutes(15),
 				SigningCredentials = credentials
 			};
 
@@ -133,11 +140,71 @@ namespace ProjectAPI.Controllers
 		}
 
 
+		private string CreateRefreshToken()
+		{
+			var tokenBytes = RandomNumberGenerator.GetBytes(64);
+			var refreshToken = Convert.ToBase64String(tokenBytes);
+
+			var tokenInUser = _authContext.Users.Any(a => a.RefreshToken == refreshToken);
+
+			if (tokenInUser)
+			{
+				return CreateRefreshToken();
+			}
+
+			return refreshToken;
+		}
+
+		private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+		{
+			var key = Encoding.ASCII.GetBytes("Fmxg2JrpJAfcOmpiMSIipCGkaoYOptOmwO5EueHU1z8Y8ewQw4lyuhChI65nyxRubUC6ameUiDUdl2SUAFeq3ia25z4F95eBc0RSlYEDAX8OAzjuCNyc5pjtKHjHZDWr");
+			var tokenValidationParameters = new TokenValidationParameters
+			{
+				ValidateAudience = false,
+				ValidateIssuer = false,
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = new SymmetricSecurityKey(key),
+				ValidateLifetime = false
+			};
+			var tokenHandler = new JwtSecurityTokenHandler();
+			SecurityToken securityToken;
+			var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+			var jwtSecurityToken = securityToken as JwtSecurityToken;
+			if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+				throw new SecurityTokenException("This is invalid token");
+			return principal;
+		}
+
 		[Authorize]
 		[HttpGet]
 		public async Task<ActionResult<User>> GetAllUsers()
 		{
 			return Ok(await _authContext.Users.ToListAsync());
+		}
+
+		[HttpPost("refresh")]
+		public async Task<IActionResult> Refresh(TokenApiDto tokenApiDto)
+		{
+			if (tokenApiDto is null)
+				return BadRequest("Invalid Client Request");
+
+			string accessToken = tokenApiDto.AccessToken;
+			string refreshToken = tokenApiDto.RefreshToken;
+			var principal = GetPrincipalFromExpiredToken(accessToken);
+			var username = principal.Identity.Name;
+			var user = await _authContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+			if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpireTime <= DateTime.Now)
+				return BadRequest("Invalid Request");
+			var newAccessToken = CreateJwt(user);
+			var newRefreshToken = CreateRefreshToken();
+			user.RefreshToken = newRefreshToken;
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new TokenApiDto()
+			{
+				AccessToken = newAccessToken,
+				RefreshToken = newRefreshToken
+			});
 		}
 
 	}
