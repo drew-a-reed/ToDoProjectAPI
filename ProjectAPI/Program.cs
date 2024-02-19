@@ -1,16 +1,14 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ProjectAPI.Context;
+using ProjectAPI.UtilityService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ProjectDbContext>(option =>
@@ -18,13 +16,15 @@ builder.Services.AddDbContext<ProjectDbContext>(option =>
 	option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnStr"));
 });
 
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 builder.Services.AddAuthentication(x =>
 {
 	x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 	x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(x =>
 {
-	x.RequireHttpsMetadata = false;
+	x.RequireHttpsMetadata = false; // Since you're not using HTTPS in development
 	x.SaveToken = true;
 	x.TokenValidationParameters = new TokenValidationParameters
 	{
@@ -43,14 +43,13 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+else
+{
+	app.UseHttpsRedirection(); // Enable HTTPS redirection in non-development environments
+}
 
-app.UseHttpsRedirection();
 app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
