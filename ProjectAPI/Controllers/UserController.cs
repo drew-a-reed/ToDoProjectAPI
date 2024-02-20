@@ -41,11 +41,11 @@ namespace ProjectAPI.Controllers
 				return BadRequest(ModelState);
 			}
 
-			var user = await _authContext.Users.FirstOrDefaultAsync(x => x.Username == userObj.Username);
+			var user = await _authContext.Users.FirstOrDefaultAsync(x => x.Email == userObj.Email);
 
 			if (user == null || !PasswordHasher.VerifyPassword(userObj.Password, user.Password))
 			{
-				return NotFound(new { Message = "Invalid username or password" });
+				return NotFound(new { Message = "Invalid email or password" });
 			}
 
 			user.Token = CreateJwt(user);
@@ -68,9 +68,6 @@ namespace ProjectAPI.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			if (await CheckUsernameExistAsync(userObj.Username))
-				return BadRequest(new { Message = "Username Already Exists" });
-
 			if (await CheckEmailExistAsync(userObj.Email))
 				return BadRequest(new { Message = "Email Already Exists" });
 
@@ -88,10 +85,6 @@ namespace ProjectAPI.Controllers
 			return Ok(new { Message = "User Registered!" });
 		}
 
-		private async Task<bool> CheckUsernameExistAsync(string username)
-		{
-			return await _authContext.Users.AnyAsync(x => x.Username == username);
-		}
 
 		private async Task<bool> CheckEmailExistAsync(string email)
 		{
@@ -129,7 +122,7 @@ namespace ProjectAPI.Controllers
 			var identity = new ClaimsIdentity(new Claim[]
 			{
 				new Claim(ClaimTypes.Role, userObj.Role),
-				new Claim(ClaimTypes.Name, $"{userObj.Username}")
+				new Claim(ClaimTypes.Name, $"{userObj.Email}")
 			});
 			var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
 
@@ -197,8 +190,8 @@ namespace ProjectAPI.Controllers
 			string accessToken = tokenApiDto.AccessToken;
 			string refreshToken = tokenApiDto.RefreshToken;
 			var principal = GetPrincipalFromExpiredToken(accessToken);
-			var username = principal.Identity.Name;
-			var user = await _authContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+			var email = principal.Identity.Name;
+			var user = await _authContext.Users.FirstOrDefaultAsync(u => u.Email == email);
 			if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpireTime <= DateTime.Now)
 				return BadRequest("Invalid Request");
 			var newAccessToken = CreateJwt(user);
