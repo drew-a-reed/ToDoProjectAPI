@@ -6,7 +6,7 @@ namespace ProjectAPI.Models
 	public class Task
 	{
 		[Key]
-		public Guid Id { get; set; } = Guid.NewGuid(); // Use Guid as the type for ID
+		public Guid Id { get; set; } = Guid.NewGuid(); 
 
 
 		public string Description { get; set; }

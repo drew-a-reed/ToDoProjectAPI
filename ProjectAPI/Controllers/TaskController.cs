@@ -34,6 +34,28 @@ namespace ProjectAPI.Controllers
 			return Ok(await _authContext.Tasks.ToListAsync());
 		}
 
+		[HttpPut("{id:guid}")]
+		public async Task<IActionResult> UpdateTask(Guid id, [FromBody] Task updatedTask)
+		{
+
+
+			var existingTask = await _authContext.Tasks.FindAsync(id);
+
+			if (existingTask == null)
+			{
+				return NotFound();
+			}
+
+			existingTask.Description = updatedTask.Description;
+			existingTask.Status = updatedTask.Status;
+			existingTask.Done = updatedTask.Done;
+
+			_authContext.Tasks.Update(existingTask);
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new { Message = "Task Updated!" });
+		}
+
 		[HttpDelete]
 		[Route("{id:guid}")]
 		public async Task<IActionResult> DeleteTask([FromRoute] Guid id)
