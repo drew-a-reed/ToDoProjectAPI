@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectAPI.Context;
 using ProjectAPI.Models;
+using System.Threading.Tasks;
 using Task = ProjectAPI.Models.Task;
 
 namespace ProjectAPI.Controllers
@@ -25,7 +26,7 @@ namespace ProjectAPI.Controllers
 			await _authContext.Tasks.AddAsync(task);
 			await _authContext.SaveChangesAsync();
 
-			return Ok(new { Message = "Task Added!" });
+			return Ok(new { TaskId = task.Id, Message = "Task Added!" });
 		}
 
 		[HttpGet]
@@ -53,7 +54,7 @@ namespace ProjectAPI.Controllers
 			_authContext.Tasks.Update(existingTask);
 			await _authContext.SaveChangesAsync();
 
-			return Ok(new { Message = "Task Updated!" });
+			return Ok(new { TaskId = updatedTask.Id, Message = "Task Updated!" });
 		}
 
 		[HttpDelete]

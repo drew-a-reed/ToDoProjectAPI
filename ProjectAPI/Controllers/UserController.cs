@@ -174,8 +174,7 @@ namespace ProjectAPI.Controllers
 			return principal;
 		}
 
-		[Authorize]
-		[HttpGet]
+		[HttpGet("users")]
 		public async Task<ActionResult<User>> GetAllUsers()
 		{
 			return Ok(await _authContext.Users.ToListAsync());
