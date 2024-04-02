@@ -138,7 +138,6 @@ namespace ProjectAPI.Controllers
 			return jwtHandler.WriteToken(token);
 		}
 
-
 		private string CreateRefreshToken()
 		{
 			var tokenBytes = RandomNumberGenerator.GetBytes(64);
@@ -179,6 +178,20 @@ namespace ProjectAPI.Controllers
 		{
 			return Ok(await _authContext.Users.ToListAsync());
 		}
+
+		[HttpGet("{id}")]
+		public async Task<ActionResult<User>> GetUserById(Guid id)
+		{
+			var user = await _authContext.Users.FindAsync(id);
+
+			if (user == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(user);
+		}
+
 
 		[HttpPost("refresh")]
 		public async Task<IActionResult> Refresh(TokenApiDto tokenApiDto)

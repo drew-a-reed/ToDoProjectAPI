@@ -50,9 +50,23 @@ namespace ProjectAPI.Controllers
 		[Route("users/{taskId}/tasks")]
 		public IActionResult GetAllUsersByTaskId(Guid taskId)
 		{
-			var users = _authContext.UserTasks.Where(ut => ut.TaskId == taskId).Select(ut => ut.UserId).ToList();
+			var userTasks = _authContext.UserTasks.Where(ut => ut.TaskId == taskId).ToList();
+			var users = new List<User>();
+
+			foreach (var userTask in userTasks)
+			{
+				var user = _authContext.Users.FirstOrDefault(u => u.Id == userTask.UserId);
+
+				if (user != null)
+				{
+					users.Add(user);
+				}
+			}
+
 			return Ok(users);
 		}
+
+
 
 		[HttpGet]
 		[Route("tasks/{userId}/users")]
@@ -95,5 +109,19 @@ namespace ProjectAPI.Controllers
 
 			return Ok(new { Message = "User deleted from task." });
 		}
+
+		[HttpDelete]
+		[Route("tasks/{taskId}")]
+		public async Task<IActionResult> DeleteUserTasksForTask(Guid taskId)
+		{
+			var userTasks = _authContext.UserTasks.Where(ut => ut.TaskId == taskId).ToList();
+
+
+			_authContext.UserTasks.RemoveRange(userTasks);
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new { Message = "User tasks deleted for the task." });
+		}
+
 	}
 }
