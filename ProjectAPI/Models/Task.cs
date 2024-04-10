@@ -12,5 +12,6 @@ namespace ProjectAPI.Models
 		public string Description { get; set; }
 		public string Status { get; set; } = "To Do";
 		public bool Done { get; set; } = false;
+		public DateTime AssignedDate { get; set; }
 	}
 }

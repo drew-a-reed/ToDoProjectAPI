@@ -12,8 +12,8 @@ using ProjectAPI.Context;
 namespace ProjectAPI.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20240223212635_init-migration")]
-    partial class initmigration
+    [Migration("20240410193400_add-date")]
+    partial class adddate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,9 @@ namespace ProjectAPI.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -102,30 +105,7 @@ namespace ProjectAPI.Migrations
 
                     b.HasKey("UserTaskId");
 
-                    b.HasIndex("TaskId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("user-tasks", (string)null);
-                });
-
-            modelBuilder.Entity("ProjectAPI.Models.UserTask", b =>
-                {
-                    b.HasOne("ProjectAPI.Models.Task", "Task")
-                        .WithMany()
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProjectAPI.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Task");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

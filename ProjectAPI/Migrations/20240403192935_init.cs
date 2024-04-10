@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjectAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class initmigration : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,6 +23,20 @@ namespace ProjectAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tasks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user-tasks",
+                columns: table => new
+                {
+                    UserTaskId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user-tasks", x => x.UserTaskId);
                 });
 
             migrationBuilder.CreateTable(
@@ -45,52 +59,16 @@ namespace ProjectAPI.Migrations
                 {
                     table.PrimaryKey("PK_users", x => x.Id);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "user-tasks",
-                columns: table => new
-                {
-                    UserTaskId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_user-tasks", x => x.UserTaskId);
-                    table.ForeignKey(
-                        name: "FK_user-tasks_tasks_TaskId",
-                        column: x => x.TaskId,
-                        principalTable: "tasks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_user-tasks_users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_user-tasks_TaskId",
-                table: "user-tasks",
-                column: "TaskId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_user-tasks_UserId",
-                table: "user-tasks",
-                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "user-tasks");
+                name: "tasks");
 
             migrationBuilder.DropTable(
-                name: "tasks");
+                name: "user-tasks");
 
             migrationBuilder.DropTable(
                 name: "users");
