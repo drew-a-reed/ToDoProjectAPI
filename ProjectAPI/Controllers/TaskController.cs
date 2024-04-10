@@ -47,9 +47,12 @@ namespace ProjectAPI.Controllers
 				return NotFound();
 			}
 
-			existingTask.Description = updatedTask.Description;
+
+			existingTask.Title = updatedTask.Title;
 			existingTask.Status = updatedTask.Status;
 			existingTask.Done = updatedTask.Done;
+			existingTask.DueDate = updatedTask.DueDate;
+			existingTask.Description = updatedTask.Description;
 
 			_authContext.Tasks.Update(existingTask);
 			await _authContext.SaveChangesAsync();

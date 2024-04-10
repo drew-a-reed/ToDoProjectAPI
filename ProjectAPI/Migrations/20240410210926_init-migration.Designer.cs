@@ -12,8 +12,8 @@ using ProjectAPI.Context;
 namespace ProjectAPI.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20240410193400_add-date")]
-    partial class adddate
+    [Migration("20240410210926_init-migration")]
+    partial class initmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,13 @@ namespace ProjectAPI.Migrations
                     b.Property<bool>("Done")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

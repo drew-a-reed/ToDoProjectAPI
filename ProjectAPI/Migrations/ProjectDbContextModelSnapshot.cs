@@ -37,7 +37,13 @@ namespace ProjectAPI.Migrations
                     b.Property<bool>("Done")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
