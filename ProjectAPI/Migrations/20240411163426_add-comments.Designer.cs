@@ -12,8 +12,8 @@ using ProjectAPI.Context;
 namespace ProjectAPI.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20240410210926_init-migration")]
-    partial class initmigration
+    [Migration("20240411163426_add-comments")]
+    partial class addcomments
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +52,28 @@ namespace ProjectAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("tasks", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectAPI.Models.TaskComment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CommentId");
+
+                    b.ToTable("comments", (string)null);
                 });
 
             modelBuilder.Entity("ProjectAPI.Models.User", b =>

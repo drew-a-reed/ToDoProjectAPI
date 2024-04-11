@@ -15,6 +15,7 @@ namespace ProjectAPI.Context
 		public DbSet<User> Users { get; set; }
 		public DbSet<Task> Tasks { get; set; }
 		public DbSet<UserTask> UserTasks { get; set; }
+		public DbSet<TaskComment> TaskComments { get; set; }
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,10 +23,8 @@ namespace ProjectAPI.Context
 			modelBuilder.Entity<User>().ToTable("users");
 			modelBuilder.Entity<Task>().ToTable("tasks");
 			modelBuilder.Entity<UserTask>().ToTable("user-tasks");
+			modelBuilder.Entity<TaskComment>().ToTable("task-comments");
 		}
-
-
-
 
 	}
 }
