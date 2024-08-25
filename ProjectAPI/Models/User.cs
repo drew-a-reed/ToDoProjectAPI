@@ -6,7 +6,7 @@ namespace ProjectAPI.Models
 	{
 
 		[Key]
-		public Guid Id { get; set; } = Guid.NewGuid();
+		public Guid UserId { get; set; } = Guid.NewGuid();
 
 		public string FirstName { get; set; }
 		public string LastName { get; set; }

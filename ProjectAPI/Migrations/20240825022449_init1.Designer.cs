@@ -12,8 +12,8 @@ using ProjectAPI.Context;
 namespace ProjectAPI.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20240411163426_add-comments")]
-    partial class addcomments
+    [Migration("20240825022449_init1")]
+    partial class init1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,7 @@ namespace ProjectAPI.Migrations
 
             modelBuilder.Entity("ProjectAPI.Models.Task", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("TaskId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -46,10 +46,13 @@ namespace ProjectAPI.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TaskboardID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("TaskId");
 
                     b.ToTable("tasks", (string)null);
                 });
@@ -73,12 +76,29 @@ namespace ProjectAPI.Migrations
 
                     b.HasKey("CommentId");
 
-                    b.ToTable("comments", (string)null);
+                    b.ToTable("task_comments", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectAPI.Models.Taskboard", b =>
+                {
+                    b.Property<Guid>("TaskboardId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TaskboardName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TaskboardPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TaskboardId");
+
+                    b.ToTable("taskboards", (string)null);
                 });
 
             modelBuilder.Entity("ProjectAPI.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -112,7 +132,7 @@ namespace ProjectAPI.Migrations
                     b.Property<string>("Token")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -133,7 +153,24 @@ namespace ProjectAPI.Migrations
 
                     b.HasKey("UserTaskId");
 
-                    b.ToTable("user-tasks", (string)null);
+                    b.ToTable("user_tasks", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectAPI.Models.UserTaskboard", b =>
+                {
+                    b.Property<Guid>("UserTaskboardId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TaskboardId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserTaskboardId");
+
+                    b.ToTable("user_taskboards", (string)null);
                 });
 #pragma warning restore 612, 618
         }

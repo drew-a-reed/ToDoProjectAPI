@@ -55,7 +55,7 @@ namespace ProjectAPI.Controllers
 
 			foreach (var userTask in userTasks)
 			{
-				var user = _authContext.Users.FirstOrDefault(u => u.Id == userTask.UserId);
+				var user = _authContext.Users.FirstOrDefault(u => u.UserId == userTask.UserId);
 
 				if (user != null)
 				{
@@ -65,8 +65,6 @@ namespace ProjectAPI.Controllers
 
 			return Ok(users);
 		}
-
-
 
 		[HttpGet]
 		[Route("tasks/{userId}/users")]

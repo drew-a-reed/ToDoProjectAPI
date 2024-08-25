@@ -85,7 +85,6 @@ namespace ProjectAPI.Controllers
 			return Ok(new { Message = "User Registered!" });
 		}
 
-
 		private async Task<bool> CheckEmailExistAsync(string email)
 		{
 			return await _authContext.Users.AnyAsync(x => x.Email == email);
@@ -192,6 +191,31 @@ namespace ProjectAPI.Controllers
 			return Ok(user);
 		}
 
+		[HttpPut("{userId}")]
+		public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User updateUserDto)
+		{
+			var user = await _authContext.Users.FindAsync(userId);
+
+			if (user == null)
+			{
+				return NotFound(new { Message = "User not found" });
+			}
+
+			user.Email = updateUserDto.Email ?? user.Email;
+			user.FirstName = updateUserDto.FirstName ?? user.FirstName;
+			user.LastName = updateUserDto.LastName ?? user.LastName;
+			user.Role = updateUserDto.Role ?? user.Role;
+
+			if (!string.IsNullOrWhiteSpace(updateUserDto.Password))
+			{
+				user.Password = PasswordHasher.HashPassword(updateUserDto.Password);
+			}
+
+			_authContext.Users.Update(user);
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new { Message = "User updated successfully", UserId = user.UserId });
+		}
 
 		[HttpPost("refresh")]
 		public async Task<IActionResult> Refresh(TokenApiDto tokenApiDto)

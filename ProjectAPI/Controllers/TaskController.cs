@@ -26,7 +26,7 @@ namespace ProjectAPI.Controllers
 			await _authContext.Tasks.AddAsync(task);
 			await _authContext.SaveChangesAsync();
 
-			return Ok(new { TaskId = task.Id, Message = "Task Added!" });
+			return Ok(new { taskId = task.TaskId, Message = "Task Added!" });
 		}
 
 		[HttpGet]
@@ -53,11 +53,12 @@ namespace ProjectAPI.Controllers
 			existingTask.Done = updatedTask.Done;
 			existingTask.DueDate = updatedTask.DueDate;
 			existingTask.Description = updatedTask.Description;
+			existingTask.Priority = updatedTask.Priority;
 
 			_authContext.Tasks.Update(existingTask);
 			await _authContext.SaveChangesAsync();
 
-			return Ok(new { TaskId = updatedTask.Id, Message = "Task Updated!" });
+			return Ok(new { taskId = updatedTask.TaskId, Message = "Task Updated!" });
 		}
 
 		[HttpDelete]
