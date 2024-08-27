@@ -63,25 +63,25 @@ namespace ProjectAPI.Controllers
 		}
 
 		[HttpPost("register")]
-public async Task<ActionResult> RegisterUser([FromBody] RegisterUserDto userDto)
+public async Task<ActionResult> RegisterUser([FromBody] User userObj)
 {
     if (!ModelState.IsValid)
         return BadRequest(ModelState);
 
-    if (await CheckEmailExistAsync(userDto.Email))
+    if (await CheckEmailExistAsync(userObj.Email))
         return BadRequest(new { Message = "Email Already Exists" });
 
-    var passStrengthMsg = CheckPasswordStrength(userDto.Password);
+    var passStrengthMsg = CheckPasswordStrength(userObj.Password);
     if (!string.IsNullOrEmpty(passStrengthMsg))
         return BadRequest(new { Message = passStrengthMsg });
 
     var user = new User
     {
         UserId = Guid.NewGuid(),
-        FirstName = userDto.FirstName,
-        LastName = userDto.LastName,
-        Email = userDto.Email,
-        Password = PasswordHasher.HashPassword(userDto.Password),
+        FirstName = userObj.FirstName,
+        LastName = userObj.LastName,
+        Email = userObj.Email,
+        Password = PasswordHasher.HashPassword(userObj.Password),
         Role = "User",
         Token = ""
     };
