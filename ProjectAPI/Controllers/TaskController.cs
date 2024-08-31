@@ -29,10 +29,19 @@ namespace ProjectAPI.Controllers
 			return Ok(new { taskId = task.TaskId, Message = "Task Added!" });
 		}
 
-		[HttpGet]
-		public async Task<ActionResult<Task>> GetAllTasks()
+		[HttpGet("{taskboardId}")]
+		public async Task<ActionResult<IEnumerable<Task>>> GetAllTasks(Guid taskboardId)
 		{
-			return Ok(await _authContext.Tasks.ToListAsync());
+			var tasks = await _authContext.Tasks
+				.Where(t => t.TaskboardId == taskboardId) 
+				.ToListAsync();
+
+			if (!tasks.Any())
+			{
+				return NotFound(new { Message = "No tasks found for the specified TaskboardId." });
+			}
+
+			return Ok(tasks);
 		}
 
 		[HttpPut("{id:guid}")]

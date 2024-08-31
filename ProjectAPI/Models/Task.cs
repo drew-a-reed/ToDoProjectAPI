@@ -17,6 +17,6 @@ namespace ProjectAPI.Models
 		public DateTime DueDate { get; set; }
 		
 		[ForeignKey("Taskboard")]
-		public Guid TaskboardID { get; set; }
+		public Guid TaskboardId { get; set; }
 	}
 }
