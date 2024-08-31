@@ -29,8 +29,9 @@ namespace ProjectAPI.Controllers
 			return Ok(new { taskId = task.TaskId, Message = "Task Added!" });
 		}
 
-		[HttpGet("{taskboardId}")]
-		public async Task<ActionResult<IEnumerable<Task>>> GetAllTasks(Guid taskboardId)
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<Task>>> GetAllTasks([FromQuery] Guid taskboardId)
+
 		{
 			var tasks = await _authContext.Tasks
 				.Where(t => t.TaskboardId == taskboardId) 
