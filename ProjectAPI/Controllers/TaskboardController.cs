@@ -76,7 +76,7 @@ namespace ProjectAPI.Controllers
 			await _authContext.Taskboards.AddAsync(taskboard);
 			await _authContext.SaveChangesAsync();
 
-			return Ok(new { Message = "Taskboard Registered!" });
+			return Ok(new { TaskboardId = taskboard.TaskboardId, Message = "Taskboard Registered!" });
 		}
 
 

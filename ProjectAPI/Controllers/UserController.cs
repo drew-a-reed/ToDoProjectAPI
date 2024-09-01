@@ -58,40 +58,40 @@ namespace ProjectAPI.Controllers
 			return Ok(new TokenApiDto()
 			{
 				AccessToken = newAccessToken,
-				RefreshToken = newRefreshToken
+				RefreshToken = newRefreshToken,
+				UserId = user.UserId
 			});
 		}
 
 		[HttpPost("register")]
-public async Task<ActionResult> RegisterUser([FromBody] User userObj)
-{
-    if (!ModelState.IsValid)
-        return BadRequest(ModelState);
+		public async Task<ActionResult> RegisterUser([FromBody] User userObj)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-    if (await CheckEmailExistAsync(userObj.Email))
-        return BadRequest(new { Message = "Email Already Exists" });
+			if (await CheckEmailExistAsync(userObj.Email))
+				return BadRequest(new { Message = "Email Already Exists" });
 
-    var passStrengthMsg = CheckPasswordStrength(userObj.Password);
-    if (!string.IsNullOrEmpty(passStrengthMsg))
-        return BadRequest(new { Message = passStrengthMsg });
+			var passStrengthMsg = CheckPasswordStrength(userObj.Password);
+			if (!string.IsNullOrEmpty(passStrengthMsg))
+				return BadRequest(new { Message = passStrengthMsg });
 
-    var user = new User
-    {
-        UserId = Guid.NewGuid(),
-        FirstName = userObj.FirstName,
-        LastName = userObj.LastName,
-        Email = userObj.Email,
-        Password = PasswordHasher.HashPassword(userObj.Password),
-        Role = "User",
-        Token = ""
-    };
+			var user = new User
+			{
+				UserId = Guid.NewGuid(),
+				FirstName = userObj.FirstName,
+				LastName = userObj.LastName,
+				Email = userObj.Email,
+				Password = PasswordHasher.HashPassword(userObj.Password),
+				Role = "User",
+				Token = ""
+			};
 
-    await _authContext.Users.AddAsync(user);
-    await _authContext.SaveChangesAsync();
+			await _authContext.Users.AddAsync(user);
+			await _authContext.SaveChangesAsync();
 
-    return Ok(new { Message = "User Registered!" });
+			return Ok(new { Message = "User Registered!" });
 }
-
 
 		private async Task<bool> CheckEmailExistAsync(string email)
 		{
