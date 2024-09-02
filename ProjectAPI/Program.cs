@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ProjectDbContext>(option =>
 {
-	option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnStrDev"));
+	option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnStr"));
 });
 
 builder.Services.AddScoped<IEmailService, EmailService>();
