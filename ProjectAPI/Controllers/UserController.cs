@@ -19,7 +19,7 @@ using IEmailService = ProjectAPI.UtilityService.IEmailService;
 
 namespace ProjectAPI.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/user")]
 	[ApiController]
 	public class UserController : ControllerBase
 	{

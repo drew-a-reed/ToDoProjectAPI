@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjectAPI.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/usertask")]
 	[ApiController]
 	public class UserTaskController : ControllerBase
 	{

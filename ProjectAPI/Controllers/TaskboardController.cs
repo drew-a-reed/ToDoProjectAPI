@@ -19,7 +19,7 @@ using IEmailService = ProjectAPI.UtilityService.IEmailService;
 
 namespace ProjectAPI.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/taskboard")]
 	[ApiController]
 	public class TaskboardController : ControllerBase
 	{
@@ -65,6 +65,11 @@ namespace ProjectAPI.Controllers
 			var passStrengthMsg = CheckPasswordStrength(taskboardObj.TaskboardPassword);
 			if (!string.IsNullOrEmpty(passStrengthMsg))
 				return BadRequest(new { Message = passStrengthMsg });
+
+			var existingTaskboards = await _authContext.Taskboards.FirstOrDefaultAsync(et => et.TaskboardName == taskboardObj.TaskboardName);
+
+			if (existingTaskboards != null)
+				return Conflict("Must choose unique taskboard name");
 
 			var taskboard = new Taskboard
 			{

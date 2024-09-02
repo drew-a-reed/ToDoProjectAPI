@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using ProjectAPI.Context;
 using ProjectAPI.Models;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ProjectAPI.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/usertaskboard")]
 	[ApiController]
 	public class UserTaskboardController : ControllerBase
 	{
@@ -19,25 +20,59 @@ namespace ProjectAPI.Controllers
 		}
 
 		[HttpPost]
-		[Route("user_taskboards")]
-		public async Task<IActionResult> AddUserTaskboards([FromBody] Guid userId, Guid taskboardId)
+		public async Task<IActionResult> AddUserTaskboards([FromBody] UserTaskboard userTaskboard)
 		{
-			if (userId == Guid.Empty || taskboardId == Guid.Empty)
+			if (userTaskboard.UserId == Guid.Empty || userTaskboard.TaskboardId == Guid.Empty)
 			{
-				return BadRequest("User ID and Taskboard ID cannot be empty.");
+				return BadRequest(new { message = "User ID and Taskboard ID cannot be empty." });
 			}
 
-			var userTaskboard = new UserTaskboard
-			{
-				UserId = userId,
-				TaskboardId = taskboardId
-			};
-			_authContext.UserTaskboards.Add(userTaskboard);
+			var existingUserTaskboard = await _authContext.UserTaskboards
+				.FirstOrDefaultAsync(utb => utb.UserId == userTaskboard.UserId && utb.TaskboardId == userTaskboard.TaskboardId);
 
+			if (existingUserTaskboard != null)
+			{
+				return NoContent();
+			}
+
+			_authContext.UserTaskboards.Add(userTaskboard);
 			await _authContext.SaveChangesAsync();
 
-			return Ok("UserTaskboard added successfully.");
+			return Ok(new { message = "UserTaskboard added successfully." });
 		}
+
+		[HttpGet("{userId}")]
+		public async Task<IActionResult> GetUserTaskboards(Guid userId)
+		{
+			if (userId == Guid.Empty)
+			{
+				return BadRequest(new { message = "User ID cannot be empty." });
+			}
+
+			var userTaskboards = await _authContext.UserTaskboards
+				.Where(utb => utb.UserId == userId)
+				.Join(
+					_authContext.Taskboards,
+					userTaskboard => userTaskboard.TaskboardId,
+					taskboard => taskboard.TaskboardId,
+					(userTaskboard, taskboard) => new
+					{
+						userTaskboard.UserId,
+						userTaskboard.TaskboardId,
+						TaskboardName = taskboard.TaskboardName,
+						Role = userTaskboard.Role
+					})
+				.ToListAsync();
+
+			if (userTaskboards == null || !userTaskboards.Any())
+			{
+				return NotFound(new { message = "No taskboards found for the specified user." });
+			}
+
+			return Ok(userTaskboards);
+		}
+
+
 
 		[HttpDelete("user/{userId}/taskboard/{taskboardId}")]
 		public async Task<IActionResult> DeleteUserFromTaskboard(Guid userId, Guid taskboardId)

@@ -8,7 +8,7 @@ using Task = ProjectAPI.Models.Task;
 
 namespace ProjectAPI.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/task")]
 	[ApiController]
 	public class TaskController : ControllerBase
 	{

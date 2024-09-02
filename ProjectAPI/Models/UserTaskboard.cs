@@ -14,5 +14,7 @@ namespace ProjectAPI.Models
 		[ForeignKey("Taskboard")]
 		public Guid TaskboardId { get; set; }
 
+		public string Role {  get; set; }
+
 	}
 }

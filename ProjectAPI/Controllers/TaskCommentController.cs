@@ -5,7 +5,7 @@ using ProjectAPI.Models;
 
 namespace ProjectAPI.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/taskcomment")]
 	[ApiController]
 	public class TaskCommentController : ControllerBase
 	{
