@@ -129,7 +129,7 @@ namespace ProjectAPI.Controllers
 			var identity = new ClaimsIdentity(new Claim[]
 			{
 				new Claim(ClaimTypes.Role, userObj.Role),
-				new Claim(ClaimTypes.Name, $"{userObj.Email}")
+				new Claim(ClaimTypes.Name, $"{userObj.FirstName} {userObj.LastName}")
 			});
 			var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
 
