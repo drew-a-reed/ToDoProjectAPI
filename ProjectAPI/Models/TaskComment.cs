@@ -15,5 +15,10 @@ namespace ProjectAPI.Models
 		public Guid TaskId { get; set; }
 
 		public string Comment {  get; set; }
+
+		public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+		public DateTime? LastModifiedDate { get; set;}
+
 	}
 }

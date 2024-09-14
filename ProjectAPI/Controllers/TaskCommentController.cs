@@ -61,6 +61,7 @@ namespace ProjectAPI.Controllers
 			existingComment.Comment = updatedComment.Comment;
 			existingComment.UserId = updatedComment.UserId;
 			existingComment.TaskId = updatedComment.TaskId;
+			existingComment.LastModifiedDate = updatedComment.LastModifiedDate;
 
 			_authContext.TaskComments.Update(existingComment);
 			await _authContext.SaveChangesAsync();

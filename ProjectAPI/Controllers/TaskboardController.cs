@@ -76,6 +76,7 @@ namespace ProjectAPI.Controllers
 				TaskboardId = Guid.NewGuid(),
 				TaskboardName = taskboardObj.TaskboardName,
 				TaskboardPassword = PasswordHasher.HashPassword(taskboardObj.TaskboardPassword),
+				DateCreated = DateTime.UtcNow,
 			};
 
 			await _authContext.Taskboards.AddAsync(taskboard);
@@ -84,6 +85,29 @@ namespace ProjectAPI.Controllers
 			return Ok(new { TaskboardId = taskboard.TaskboardId, Message = "Taskboard Registered!" });
 		}
 
+		[HttpGet("taskboards")]
+		public async Task<ActionResult<Taskboard>> GetAllTaskboards()
+		{
+			return Ok(await _authContext.Taskboards.ToListAsync());
+		}
+
+		[HttpDelete]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> DeleteTaskboard([FromRoute] Guid id)
+		{
+			var taskboard = await _authContext.Taskboards.FindAsync(id);
+
+			if (taskboard == null)
+			{
+				return NotFound();
+			}
+
+			_authContext.Taskboards.Remove(taskboard);
+
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new { Message = "Taskboard Deleted!" });
+		}
 
 		private string CheckPasswordStrength(string password)
 		{
@@ -108,51 +132,6 @@ namespace ProjectAPI.Controllers
 
 			return sb.ToString();
 		}
-
-		//[HttpGet("users")]
-		//public async Task<ActionResult<User>> GetAllUsers()
-		//{
-		//	return Ok(await _authContext.Users.ToListAsync());
-		//}
-
-		//[HttpGet("{id}")]
-		//public async Task<ActionResult<User>> GetUserById(Guid id)
-		//{
-		//	var user = await _authContext.Users.FindAsync(id);
-
-		//	if (user == null)
-		//	{
-		//		return NotFound();
-		//	}
-
-		//	return Ok(user);
-		//}
-
-		//[HttpPut("{userId}")]
-		//public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User updateUserDto)
-		//{
-		//	var user = await _authContext.Users.FindAsync(userId);
-
-		//	if (user == null)
-		//	{
-		//		return NotFound(new { Message = "User not found" });
-		//	}
-
-		//	user.Email = updateUserDto.Email ?? user.Email;
-		//	user.FirstName = updateUserDto.FirstName ?? user.FirstName;
-		//	user.LastName = updateUserDto.LastName ?? user.LastName;
-		//	user.Role = updateUserDto.Role ?? user.Role;
-
-		//	if (!string.IsNullOrWhiteSpace(updateUserDto.Password))
-		//	{
-		//		user.Password = PasswordHasher.HashPassword(updateUserDto.Password);
-		//	}
-
-		//	_authContext.Users.Update(user);
-		//	await _authContext.SaveChangesAsync();
-
-		//	return Ok(new { Message = "User updated successfully", UserId = user.UserId });
-		//}
 
 
 	}

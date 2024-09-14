@@ -20,7 +20,7 @@ namespace ProjectAPI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> AddUserTaskboards([FromBody] UserTaskboard userTaskboard)
+		public async Task<IActionResult> AddUserToTaskboard([FromBody] UserTaskboard userTaskboard)
 		{
 			if (userTaskboard.UserId == Guid.Empty || userTaskboard.TaskboardId == Guid.Empty)
 			{
@@ -38,7 +38,7 @@ namespace ProjectAPI.Controllers
 			_authContext.UserTaskboards.Add(userTaskboard);
 			await _authContext.SaveChangesAsync();
 
-			return Ok(new { message = "UserTaskboard added successfully." });
+			return Ok(new { message = "User added to taskboard successfully." });
 		}
 
 		[HttpGet("{userId}")]
@@ -59,8 +59,6 @@ namespace ProjectAPI.Controllers
 					{
 						userTaskboard.UserId,
 						userTaskboard.TaskboardId,
-						TaskboardName = taskboard.TaskboardName,
-						Role = userTaskboard.Role
 					})
 				.ToListAsync();
 
@@ -71,8 +69,6 @@ namespace ProjectAPI.Controllers
 
 			return Ok(userTaskboards);
 		}
-
-
 
 		[HttpDelete("user/{userId}/taskboard/{taskboardId}")]
 		public async Task<IActionResult> DeleteUserFromTaskboard(Guid userId, Guid taskboardId)

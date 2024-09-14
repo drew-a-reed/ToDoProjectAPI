@@ -7,7 +7,6 @@ namespace ProjectAPI.Models
 
 		[Key]
 		public Guid UserId { get; set; } = Guid.NewGuid();
-
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public string Email { get; set; }
@@ -18,7 +17,6 @@ namespace ProjectAPI.Models
 		public DateTime RefreshTokenExpireTime { get; set; }
 		public string ResetPasswordToken { get; set; }
 		public DateTime ResetPasswordTokenExpireTime { get; set;}
-
 
 	}
 }

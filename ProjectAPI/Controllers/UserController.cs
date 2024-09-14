@@ -93,6 +93,69 @@ namespace ProjectAPI.Controllers
 			return Ok(new { Message = "User Registered!" });
 }
 
+		[HttpDelete]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
+		{
+			var user = await _authContext.Users.FindAsync(id);
+
+			if (user == null)
+			{
+				return NotFound();
+			}
+
+			_authContext.Users.Remove(user);
+
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new { Message = "User Deleted" });
+		}
+
+		[HttpGet("users")]
+		public async Task<ActionResult<User>> GetAllUsers()
+		{
+			return Ok(await _authContext.Users.ToListAsync());
+		}
+
+		[HttpGet("{id}")]
+		public async Task<ActionResult<User>> GetUserById(Guid id)
+		{
+			var user = await _authContext.Users.FindAsync(id);
+
+			if (user == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(user);
+		}
+
+		[HttpPut("{userId}")]
+		public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User updateUserDto)
+		{
+			var user = await _authContext.Users.FindAsync(userId);
+
+			if (user == null)
+			{
+				return NotFound(new { Message = "User not found" });
+			}
+
+			user.Email = updateUserDto.Email ?? user.Email;
+			user.FirstName = updateUserDto.FirstName ?? user.FirstName;
+			user.LastName = updateUserDto.LastName ?? user.LastName;
+			user.Role = updateUserDto.Role ?? user.Role;
+
+			if (!string.IsNullOrWhiteSpace(updateUserDto.Password))
+			{
+				user.Password = PasswordHasher.HashPassword(updateUserDto.Password);
+			}
+
+			_authContext.Users.Update(user);
+			await _authContext.SaveChangesAsync();
+
+			return Ok(new { Message = "User updated successfully", UserId = user.UserId });
+		}
+
 		private async Task<bool> CheckEmailExistAsync(string email)
 		{
 			return await _authContext.Users.AnyAsync(x => x.Email == email);
@@ -178,51 +241,6 @@ namespace ProjectAPI.Controllers
 			if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
 				throw new SecurityTokenException("This is invalid token");
 			return principal;
-		}
-
-		[HttpGet("users")]
-		public async Task<ActionResult<User>> GetAllUsers()
-		{
-			return Ok(await _authContext.Users.ToListAsync());
-		}
-
-		[HttpGet("{id}")]
-		public async Task<ActionResult<User>> GetUserById(Guid id)
-		{
-			var user = await _authContext.Users.FindAsync(id);
-
-			if (user == null)
-			{
-				return NotFound();
-			}
-
-			return Ok(user);
-		}
-
-		[HttpPut("{userId}")]
-		public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User updateUserDto)
-		{
-			var user = await _authContext.Users.FindAsync(userId);
-
-			if (user == null)
-			{
-				return NotFound(new { Message = "User not found" });
-			}
-
-			user.Email = updateUserDto.Email ?? user.Email;
-			user.FirstName = updateUserDto.FirstName ?? user.FirstName;
-			user.LastName = updateUserDto.LastName ?? user.LastName;
-			user.Role = updateUserDto.Role ?? user.Role;
-
-			if (!string.IsNullOrWhiteSpace(updateUserDto.Password))
-			{
-				user.Password = PasswordHasher.HashPassword(updateUserDto.Password);
-			}
-
-			_authContext.Users.Update(user);
-			await _authContext.SaveChangesAsync();
-
-			return Ok(new { Message = "User updated successfully", UserId = user.UserId });
 		}
 
 		[HttpPost("refresh")]

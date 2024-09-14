@@ -37,7 +37,6 @@ namespace ProjectAPI.Controllers
 			return Ok(new { Message = "User Tasks Added!" });
 		}
 
-
 		[HttpGet]
 		[Route("user-tasks")]
 		public IActionResult GetAllUserTasks()

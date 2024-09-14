@@ -39,7 +39,7 @@ namespace ProjectAPI.Controllers
 
 			if (!tasks.Any())
 			{
-				return NotFound(new { Message = "No tasks found for the specified TaskboardId." });
+				return NotFound(new { Message = "No tasks found for the specified Taskboard." });
 			}
 
 			return Ok(tasks);
@@ -49,7 +49,6 @@ namespace ProjectAPI.Controllers
 		public async Task<IActionResult> UpdateTask(Guid id, [FromBody] Task updatedTask)
 		{
 
-
 			var existingTask = await _authContext.Tasks.FindAsync(id);
 
 			if (existingTask == null)
@@ -57,13 +56,14 @@ namespace ProjectAPI.Controllers
 				return NotFound();
 			}
 
-
 			existingTask.Title = updatedTask.Title;
 			existingTask.Status = updatedTask.Status;
 			existingTask.Done = updatedTask.Done;
 			existingTask.DueDate = updatedTask.DueDate;
 			existingTask.Description = updatedTask.Description;
 			existingTask.Priority = updatedTask.Priority;
+			existingTask.LastEditedDate = updatedTask.LastEditedDate;
+			existingTask.LastEditUserId = updatedTask.LastEditUserId;
 
 			_authContext.Tasks.Update(existingTask);
 			await _authContext.SaveChangesAsync();
@@ -86,7 +86,7 @@ namespace ProjectAPI.Controllers
 
 			await _authContext.SaveChangesAsync();
 
-			return Ok();
+			return Ok(new {Message = "Task Deleted"});
 		}
 
 	}

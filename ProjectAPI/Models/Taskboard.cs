@@ -11,5 +11,7 @@ namespace ProjectAPI.Models
 		public string TaskboardName { get; set; }
 
 		public string TaskboardPassword { get; set; }
+
+		public DateTime? DateCreated { get; set; }
 	}
 }
