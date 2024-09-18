@@ -76,7 +76,7 @@ namespace ProjectAPI.Controllers
 				TaskboardId = Guid.NewGuid(),
 				TaskboardName = taskboardObj.TaskboardName,
 				TaskboardPassword = PasswordHasher.HashPassword(taskboardObj.TaskboardPassword),
-				DateCreated = DateTime.UtcNow,
+				DateTaskboardCreated = DateTime.UtcNow,
 			};
 
 			await _authContext.Taskboards.AddAsync(taskboard);

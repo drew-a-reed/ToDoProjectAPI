@@ -70,7 +70,7 @@ namespace ProjectAPI.Controllers
 				return BadRequest(ModelState);
 
 			if (await CheckEmailExistAsync(userObj.Email))
-				return BadRequest(new { Message = "Email Already Exists" });
+				return StatusCode(403, new { Message = "Email Already Exists" });
 
 			var passStrengthMsg = CheckPasswordStrength(userObj.Password);
 			if (!string.IsNullOrEmpty(passStrengthMsg))
