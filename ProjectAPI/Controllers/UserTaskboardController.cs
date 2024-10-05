@@ -59,6 +59,7 @@ namespace ProjectAPI.Controllers
 					{
 						userTaskboard.UserId,
 						userTaskboard.TaskboardId,
+						taskboard.TaskboardName
 					})
 				.ToListAsync();
 
