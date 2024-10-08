@@ -41,7 +41,7 @@ namespace ProjectAPI.Controllers
 			return Ok(new { message = "User added to taskboard successfully." });
 		}
 
-		[HttpGet("{userId}")]
+		[HttpGet("{userId}/taskboards")]
 		public async Task<IActionResult> GetUserTaskboards(Guid userId)
 		{
 			if (userId == Guid.Empty)
@@ -70,6 +70,39 @@ namespace ProjectAPI.Controllers
 
 			return Ok(userTaskboards);
 		}
+
+		[HttpGet("{taskboardId}/users")]
+		public async Task<IActionResult> GetTaskboardUsers(Guid taskboardId)
+		{
+			if (taskboardId == Guid.Empty)
+			{
+				return BadRequest(new { message = "Taskboard ID cannot be empty." });
+			}
+
+			var taskboardUsers = await _authContext.UserTaskboards
+				.Where(tbu => tbu.TaskboardId == taskboardId)
+				.Join(
+					_authContext.Users,
+					userTaskboard => userTaskboard.UserId,
+					user => user.UserId,
+					(userTaskboard, user) => new
+					{
+						user.UserId,
+						user.FirstName,
+						user.LastName,
+						user.Email,
+						userTaskboard.Role
+					})
+				.ToListAsync();
+
+			if (taskboardUsers == null || !taskboardUsers.Any())
+			{
+				return NotFound(new { message = "No users found for the specified taskboard." });
+			}
+
+			return Ok(taskboardUsers);
+		}
+
 
 		[HttpDelete("user/{userId}/taskboard/{taskboardId}")]
 		public async Task<IActionResult> DeleteUserFromTaskboard(Guid userId, Guid taskboardId)
