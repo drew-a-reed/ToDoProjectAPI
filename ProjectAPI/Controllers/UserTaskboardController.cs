@@ -41,7 +41,7 @@ namespace ProjectAPI.Controllers
 			return Ok(new { message = "User added to taskboard successfully." });
 		}
 
-		[HttpGet("{userId}")]
+		[HttpGet("{userId}/taskboards")]
 		public async Task<IActionResult> GetUserTaskboards(Guid userId)
 		{
 			if (userId == Guid.Empty)
