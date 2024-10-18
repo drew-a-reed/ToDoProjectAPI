@@ -11,6 +11,8 @@ namespace ProjectAPI.Models
 		[ForeignKey("User")]
 		public Guid UserId { get; set; }
 
+		public string UserName { get; set; }
+
 		[ForeignKey("Task")]
 		public Guid TaskId { get; set; }
 
