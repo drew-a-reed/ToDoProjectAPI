@@ -130,21 +130,6 @@ namespace ProjectAPI.Controllers
 			return Ok(user);
 		}
 
-		[HttpGet("name/{id}")]
-		public async Task<ActionResult<string>> GetUserName(Guid id)
-		{
-			var user = await _authContext.Users.FindAsync(id);
-
-			if (user == null)
-			{
-				return NotFound("User not found.");
-			}
-
-			// Combine first and last name
-			var fullName = $"{user.FirstName} {user.LastName}";
-			return Ok(fullName);
-		}
-
 		[HttpPut("{userId}")]
 		public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User updateUserDto)
 		{

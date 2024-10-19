@@ -16,7 +16,6 @@ namespace ProjectAPI.Controllers
 		}
 
 		[HttpPost]
-		[Route("task-comments")]
 		public async Task<IActionResult> AddTaskComment([FromBody] TaskComment taskComment)
 		{
 			await _authContext.TaskComments.AddAsync(taskComment);
