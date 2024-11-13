@@ -18,6 +18,8 @@ namespace ProjectAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> AddTaskComment([FromBody] TaskComment taskComment)
 		{
+			Console.WriteLine($"Received comment: {taskComment.Comment}, TaskId: {taskComment.TaskId}, UserId: {taskComment.UserId}");
+
 			await _authContext.TaskComments.AddAsync(taskComment);
 			await _authContext.SaveChangesAsync();
 
